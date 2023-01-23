@@ -1,21 +1,22 @@
 ---
 # This automation simulates the use of the IKEA TRADFRI Remote control
 # connected through ZHA.
+# Inspired by : source_url: https://github.com/niro1987/homeassistant-config/blob/main/blueprints/automation/niro1987/zha_ikea_tradfri_styrbar_color.yaml
 
 blueprint:
-  source_url: https://github.com/niro1987/homeassistant-config/blob/main/blueprints/automation/niro1987/zha_ikea_tradfri_styrbar_color.yaml
+  source_url: https://github.com/NuklearStriker/Home_Assistant/blob/main/blueprints/automation/zha_ikea_styrbar_color.yaml
 
-  name: ZHA - IKEA TRADFRI - STYRBAR - Color Lights
+  name: ZHA - IKEA STYRBAR - Color Lights
 
   description: >-
-    This automation simulates the use of the IKEA TRADFRI STYRBAR remote control
+    This automation simulates the use of the IKEA STYRBAR remote control
     connected through ZHA.
 
   domain: automation
 
   input:
     remote:
-      name: IKEA TRADFRI remote control
+      name: IKEA STYRBAR remote control
       description: Select the remote control you wish to use.
       selector:
         device:
@@ -68,12 +69,6 @@ action:
           - service: light.turn_on
             target:
               entity_id: !input light
-            data:
-              brightness: 254
-              hs_color:
-                - 38.222
-                - 52.941
-              transition: "{{ (var_speed / 1000)|float }}"
 
       # Long-Press on the dim-up button.
       - conditions:
@@ -100,8 +95,6 @@ action:
           - service: light.turn_off
             target:
               entity_id: !input light
-            data:
-              transition: "{{ (var_speed / 1000)|float }}"
 
       # Long-Press on the dim-down button.
       - conditions:
