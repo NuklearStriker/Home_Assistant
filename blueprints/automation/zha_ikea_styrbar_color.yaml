@@ -126,13 +126,13 @@ action:
               entity_id: !input light
             data:
               hs_color:
-                - '{{ state_attr(var_light, "hs_color")[0] }}'
                 - >-
-                  {% if state_attr(var_light, "hs_color")[1] - 20 < 0 %}
-                    {{ state_attr(var_light, "hs_color")[1] - 20 + 100 }}
+                  {% if state_attr(var_light, "hs_color")[0] - 20 < 0 %}
+                    {{ state_attr(var_light, "hs_color")[0] - 20 + 360 }}
                   {% else %}
-                    {{ state_attr(var_light, "hs_color")[1] - 20 }}
+                    {{ state_attr(var_light, "hs_color")[0] - 20 }}
                   {% endif %}
+                - '{{ state_attr(var_light, "hs_color")[1] }}'
               transition: "{{ (var_speed / 1000)|float }}"
 
       # Long-Press on the left button.
@@ -150,13 +150,13 @@ action:
                     entity_id: !input light
                   data:
                     hs_color:
-                      - '{{ state_attr(var_light, "hs_color")[0] }}'
                       - >-
-                        {% if state_attr(var_light, "hs_color")[1] - 10 < 0 %}
-                          {{ state_attr(var_light, "hs_color")[1] - 10 + 100 }}
+                        {% if state_attr(var_light, "hs_color")[0] - 10 < 0 %}
+                          {{ state_attr(var_light, "hs_color")[0] - 10 + 360 }}
                         {% else %}
-                          {{ state_attr(var_light, "hs_color")[1] - 10 }}
+                          {{ state_attr(var_light, "hs_color")[0] - 10 }}
                         {% endif %}
+                      - '{{ state_attr(var_light, "hs_color")[1] }}'
                     transition: "{{ (var_speed / 1000)|float }}"
                 - delay:
                     milliseconds: !input speed
@@ -174,10 +174,10 @@ action:
             data:
               hs_color:
                 - >-
-                  {% if state_attr(var_light, "hs_color")[0] + 18 > 360 %}
-                    {{ state_attr(var_light, "hs_color")[0] + 18 - 360 }}
+                  {% if state_attr(var_light, "hs_color")[0] + 20 > 360 %}
+                    {{ state_attr(var_light, "hs_color")[0] + 20 - 360 }}
                   {% else %}
-                    {{ state_attr(var_light, "hs_color")[0] + 18 }}
+                    {{ state_attr(var_light, "hs_color")[0] + 20 }}
                   {% endif %}
                 - '{{ state_attr(var_light, "hs_color")[1] }}'
               transition: "{{ (var_speed / 1000)|float }}"
@@ -198,10 +198,10 @@ action:
                   data:
                     hs_color:
                       - >-
-                        {% if state_attr(var_light, "hs_color")[0] + 18 > 360 %}
-                          {{ state_attr(var_light, "hs_color")[0] + 18 - 360 }}
+                        {% if state_attr(var_light, "hs_color")[0] + 10 > 360 %}
+                          {{ state_attr(var_light, "hs_color")[0] + 10 - 360 }}
                         {% else %}
-                          {{ state_attr(var_light, "hs_color")[0] + 18 }}
+                          {{ state_attr(var_light, "hs_color")[0] + 10 }}
                         {% endif %}
                       - '{{ state_attr(var_light, "hs_color")[1] }}'
                     transition: "{{ (var_speed / 1000)|float }}"
