@@ -64,6 +64,7 @@ action:
                 "{{ (range(0, 255)|random) }}",
                 "{{ (range(0, 255)|random) }}",
               ]
+            brightness: "255"
             transition: 0.1
         - delay:
             milliseconds: !input speed
