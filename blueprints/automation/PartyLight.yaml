@@ -32,7 +32,6 @@ blueprint:
         number:
           min: 100
           max: 5000
-          mode: slider
           unit_of_measurement: milliseconds
 
 mode: single
