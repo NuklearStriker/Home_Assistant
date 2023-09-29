@@ -21,8 +21,6 @@ blueprint:
       selector:
         entity:
           domain: sensor
-          manufacturer: IKEA of Sweden
-          model: Remote Control N2
 
     target_light:
       name: Light
