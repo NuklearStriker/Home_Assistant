@@ -53,20 +53,21 @@ action:
           - condition: template
             value_template: '{{ command == "on" }}'
         sequence:
-          - action:
-            - type: turn_on
+          - service: light.turn_on
+            target:
               entity_id: !input target_light
-              domain: light
+            data:
+              brightness: 120
+              rgb_color: [255, 0, 0]
 
       # Short-Press on the dim-down button.
       - conditions:
           - condition: template
             value_template: '{{ command == "off" }}'
         sequence:
-          - action:
-            - type: turn_off
+          - service: light.turn_off
+            target:
               entity_id: !input target_light
-              domain: light
 
     # Any other event will cancel the repeat loops.
     default: []
