@@ -19,8 +19,9 @@ blueprint:
       name: IKEA STYRBAR remote control
       description: Select the remote control you wish to use.
       selector:
-        entity:
-          domain: sensor
+        target:
+          entity:
+            domain: sensor
 
     target_light:
       name: Light
