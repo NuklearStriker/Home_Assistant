@@ -19,11 +19,10 @@ blueprint:
       name: IKEA STYRBAR remote control
       description: Select the remote control you wish to use.
       selector:
-        device:
+        entity:
           filter:
             - integration: mqtt
-              manufacturer: IKEA
-              model: STYRBAR remote control (E2001/E2002)
+              domain: sensor
 
     target_light:
       name: Light
@@ -39,10 +38,9 @@ variables:
   var_light: !input target_light
 
 trigger:
-  - platform: device
-    domain: mqtt
+  - platform: state
     device_id: !input 'remote'
-    type: action
+    attribute: action
     
 condition: []
     
@@ -55,18 +53,20 @@ action:
           - condition: template
             value_template: '{{ command == "on" }}'
         sequence:
-          - service: light.turn_on
-            target:
+          - action:
+            - type: turn_on
               entity_id: !input target_light
+              domain: light
 
       # Short-Press on the dim-down button.
       - conditions:
           - condition: template
             value_template: '{{ command == "off" }}'
         sequence:
-          - service: light.turn_off
-            target:
+          - action:
+            - type: turn_off
               entity_id: !input target_light
+              domain: light
 
     # Any other event will cancel the repeat loops.
     default: []
