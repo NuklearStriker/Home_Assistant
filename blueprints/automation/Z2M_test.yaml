@@ -24,8 +24,6 @@ blueprint:
             - integration: mqtt
               manufacturer: IKEA
               model: STYRBAR remote control (E2001/E2002)
-          entity:
-            - domain: sensor
 
     target_light:
       name: Light
@@ -54,8 +52,10 @@ variables:
   var_speed: !input speed
 
 trigger:
-  - platform: state
-    entity_id: !input 'remote'
+  - platform: device
+    device_id: !input 'remote'
+    type: action
+    
 condition: []
     
 action:
