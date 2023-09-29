@@ -39,7 +39,7 @@ variables:
 
 trigger:
   - platform: state
-    device_id: !input 'remote'
+    entity_id: !input 'remote'
     attribute: action
     
 condition: []
