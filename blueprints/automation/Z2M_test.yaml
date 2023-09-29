@@ -26,9 +26,8 @@ blueprint:
       name: Light
       description: Select the light entity you wish to control.
       selector:
-        target:
-          entity:
-            domain: light
+        entity:
+          domain: light
 
     speed:
       name: Speed
@@ -64,7 +63,8 @@ action:
             value_template: '{{ command == "on" }}'
         sequence:
           - service: light.turn_on
-            target: !input target_light
+            target:
+              entity_id: !input target_light
 
       # Short-Press on the dim-down button.
       - conditions:
@@ -72,7 +72,8 @@ action:
             value_template: '{{ command == "off" }}'
         sequence:
           - service: light.turn_off
-            target: !input target_light
+            target:
+              entity_id: !input target_light
 
     # Any other event will cancel the repeat loops.
     default: []
