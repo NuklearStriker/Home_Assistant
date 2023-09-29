@@ -19,8 +19,13 @@ blueprint:
       name: IKEA STYRBAR remote control
       description: Select the remote control you wish to use.
       selector:
-        entity:
-          domain: sensor
+        device:
+          filter:
+            - integration: mqtt
+              manufacturer: IKEA
+              model: STYRBAR remote control (E2001/E2002)
+          entity:
+            - domain: sensor
 
     target_light:
       name: Light
