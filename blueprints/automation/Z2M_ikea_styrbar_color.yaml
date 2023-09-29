@@ -21,7 +21,6 @@ blueprint:
       selector:
         device:
           integration: mqtt
-          domain: sensor
           manufacturer: IKEA
           model: STYRBAR remote control (E2001/E2002)
 
