@@ -32,27 +32,15 @@ blueprint:
         entity:
           domain: light
 
-    speed:
-      name: Speed
-      description: The speed in which to update the light when the button is held.
-      selector:
-        number:
-          min: 100
-          max: 1000
-          step: 100
-          unit_of_measurement: milliseconds
-          mode: slider
-      default: 500
-
 mode: restart
 max_exceeded: silent
 
 variables:
   var_light: !input target_light
-  var_speed: !input speed
 
 trigger:
   - platform: device
+    domain: mqtt
     device_id: !input 'remote'
     type: action
     
