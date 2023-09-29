@@ -22,7 +22,7 @@ blueprint:
         entity:
           domain: sensor
 
-    light:
+    target_light:
       name: Light
       description: Select the light entity you wish to control.
       selector:
@@ -45,7 +45,7 @@ mode: restart
 max_exceeded: silent
 
 variables:
-  var_light: !input light
+  var_light: !input target_light
   var_speed: !input speed
 
 trigger:
@@ -63,7 +63,7 @@ action:
             value_template: '{{ command == "on" }}'
         sequence:
           - service: light.turn_on
-            target: !input light
+            target: !input target_light
 
       # Long-Press on the dim-up button.
       - conditions:
@@ -71,7 +71,7 @@ action:
             value_template: '{{ command == "brightness_move_up" }}'
         sequence:
           - service: light.turn_on
-            target: !input light
+            target: !input target_light
 
       # Short-Press on the dim-down button.
       - conditions:
@@ -79,7 +79,7 @@ action:
             value_template: '{{ command == "off" }}'
         sequence:
           - service: light.turn_off
-            target: !input light
+            target: !input target_light
 
       # Long-Press on the dim-down button.
       - conditions:
@@ -87,7 +87,7 @@ action:
             value_template: '{{ command == "brightness_move_down" }}'
         sequence:
           - service: light.turn_on
-            target: !input light
+            target: !input target_light
 
       # Short-Press on the left button.
       - conditions:
@@ -95,7 +95,7 @@ action:
             value_template: '{{ command == "arrow_left_click" }}'
         sequence:
           - service: light.turn_on
-            target: !input light
+            target: !input target_light
 
       # Long-Press on the left button.
       - conditions:
@@ -103,7 +103,7 @@ action:
             value_template: '{{ command == "arrow_left_hold" }}'
         sequence:
           - service: light.turn_on
-            target: !input light
+            target: !input target_light
 
       # Short-Press on the right button.
       - conditions:
@@ -111,7 +111,7 @@ action:
             value_template: '{{ command == "arrow_right_click" }}'
         sequence:
           - service: light.turn_on
-            target: !input light
+            target: !input target_light
 
       # Long-Press on the right button.
       - conditions:
@@ -119,7 +119,7 @@ action:
             value_template: '{{ command == "arrow_right_hold" }}'
         sequence:
           - service: light.turn_on
-            target: !input light
+            target: !input target_light
 
     # Any other event will cancel the repeat loops.
     default: []
