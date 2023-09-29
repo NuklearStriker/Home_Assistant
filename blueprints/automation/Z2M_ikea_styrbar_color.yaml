@@ -21,8 +21,9 @@ blueprint:
       selector:
         device:
           integration: mqtt
-          manufacturer: IKEA of Sweden
-          model: Remote Control N2
+          domain: sensor
+          manufacturer: IKEA
+          model: STYRBAR remote control (E2001/E2002)
 
     light:
       name: Light
