@@ -28,8 +28,9 @@ blueprint:
       name: Light
       description: Select the light entity you wish to control.
       selector:
-        entity:
-          domain: light
+        device:
+          entity:
+            domain: light
 
 mode: restart
 max_exceeded: silent
