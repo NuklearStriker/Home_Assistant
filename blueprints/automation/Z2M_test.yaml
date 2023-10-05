@@ -2,6 +2,14 @@
 # This automation simulates the use of the IKEA TRADFRI Remote control
 # connected through Zigbee2MQTT.
 
+# | Button   | Action              |
+# | -------- | ------------------- |
+# | Power    | Toggle the light    |
+# | Dim-Up   | Increase brightness |
+# | Dim-Down | Decrease brightness |
+# | Right    | Change color        |
+# | Left     | Change saturation   |
+
 blueprint:
   source_url: https://github.com/NuklearStriker/Home_Assistant/blob/main/blueprints/automation/Z2M_test.yaml
 
