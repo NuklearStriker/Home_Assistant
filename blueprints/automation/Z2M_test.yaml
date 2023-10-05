@@ -1,22 +1,21 @@
 ---
 # This automation simulates the use of the IKEA TRADFRI Remote control
 # connected through Zigbee2MQTT.
-# Inspired by : source_url: https://github.com/niro1987/homeassistant-config/blob/main/blueprints/automation/niro1987/zha_ikea_tradfri_styrbar_color.yaml
 
 blueprint:
   source_url: https://github.com/NuklearStriker/Home_Assistant/blob/main/blueprints/automation/Z2M_test.yaml
 
-  name: Z2M - IKEA STYRBAR - Color Lights
+  name: Z2M - IKEA TRADFRI - Color Lights
 
   description: >-
-    This automation simulates the use of the IKEA STYRBAR remote control
+    This automation simulates the use of the IKEA TRADFRI remote control
     connected through Z2M.
 
   domain: automation
 
   input:
     remote:
-      name: IKEA STYRBAR remote control
+      name: IKEA TRADFRI remote control
       description: Select the remote control you wish to use.
       selector:
         entity:
@@ -47,21 +46,19 @@ condition: []
     
 action:
   - variables:
-      command: '{{ trigger.to_state.state }}'
+      command: " {{ trigger.to_state.attributes.action }} "
   - choose:
       # Short-Press on the dim-up button.
       - conditions:
-          - condition: template
-            value_template: '{{ command == "toggle" }}'
+          - '{{ command == "toggle" }}'
         sequence:
-          - service: light.ttoggle
+          - service: light.toggle
             target:
               entity_id: !input target_light
               
-      # Short-Press on the dim-up button.
+      # Short-Press on the up button.
       - conditions:
-          - condition: template
-            value_template: '{{ command == "on" }}'
+          - '{{ command == "brightness_up_click" }}'
         sequence:
           - service: light.turn_on
             target:
@@ -72,8 +69,7 @@ action:
 
       # Short-Press on the dim-down button.
       - conditions:
-          - condition: template
-            value_template: '{{ command == "off" }}'
+          - '{{ command == "brightness_down_click" }}'
         sequence:
           - service: light.turn_off
             target:
