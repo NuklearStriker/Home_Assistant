@@ -1,0 +1,128 @@
+---
+# This automation simulates the use of the IKEA TRADFRI Remote control
+# connected through Zigbee2MQTT.
+
+# | Button   | Action              |
+# | -------- | ------------------- |
+# | Power    | Toggle the light    |
+# | Dim-Up   | Increase brightness |
+# | Dim-Down | Decrease brightness |
+# | Right    | Change color        |
+# | Left     | Change saturation   |
+
+blueprint:
+  source_url: https://raw.githubusercontent.com/NuklearStriker/Home_Assistant/main/blueprints/automation/Z2M_test.yaml
+
+  name: Z2M - IKEA TRADFRI - Color Lights
+
+  description: >-
+    This automation simulates the use of the IKEA TRADFRI remote control
+    connected through Z2M.
+
+  domain: automation
+
+  input:
+    remote:
+      name: IKEA TRADFRI remote control
+      description: Select the remote control you wish to use.
+      selector:
+        entity:
+          filter:
+            domain: sensor
+
+    target_light:
+      name: Light
+      description: Select the light entity you wish to control.
+      selector:
+        entity:
+          domain: light
+    
+    speed:
+      name: Speed
+      description: The speed in which to update the light when the button is held.
+      selector:
+        number:
+          min: 100
+          max: 1000
+          step: 100
+          unit_of_measurement: milliseconds
+          mode: slider
+      default: 500
+      
+trigger:
+  - platform: state
+    entity_id: !input 'remote'
+    attribute: action
+
+condition: []
+
+action:
+  - variables:
+      command: " {{ trigger.to_state.attributes.action }} "
+      var_speed: 200
+      var_light: !input target_light
+      
+  - choose:
+      - conditions:
+          - condition: template
+            value_template: "{{ command == \"toggle\" }}"
+        sequence:
+          - service: light.toggle
+            target:
+              entity_id: !input target_light
+            data: {}
+      - conditions:
+          - condition: template
+            value_template: "{{ command == \"brightness_up_click\" }}"
+        sequence:
+          - service: light.turn_on
+            target:
+              entity_id: !input target_light
+            data:
+              brightness_step_pct: 10
+              transition: "{{ (var_speed / 1000)|float }}"
+      - conditions:
+          - condition: template
+            value_template: "{{ command == \"brightness_down_click\" }}"
+        sequence:
+          - service: light.turn_on
+            target:
+              entity_id: !input target_light
+            data:
+              brightness_step_pct: -10
+              transition: "{{ (var_speed / 1000)|float }}"
+      - conditions:
+          - condition: template
+            value_template: "{{ command == \"arrow_left_click\" }}"
+        sequence:
+          - service: light.turn_on
+            target:
+              entity_id: !input target_light
+            data:
+              hs_color:
+                - "{{ state_attr(var_light, \"hs_color\")[0] }}"
+                - |-
+                  {% if state_attr(var_light, "hs_color")[1] - 5 < 0 %}
+                    {{ state_attr(var_light, "hs_color")[1] - 5 + 100 }}
+                  {% else %}
+                    {{ state_attr(var_light, "hs_color")[1] - 5 }}
+                  {% endif %}
+              transition: "{{ (var_speed / 1000)|float }}"
+      - conditions:
+          - condition: template
+            value_template: "{{ command == \"arrow_right_click\" }}"
+        sequence:
+          - service: light.turn_on
+            target:
+              entity_id: !input target_light
+            data:
+              hs_color:
+                - |-
+                  {% if state_attr(var_light, "hs_color")[0] + 10 > 360 %}
+                    {{ state_attr(var_light, "hs_color")[0] + 10 - 360 }}
+                  {% else %}
+                    {{ state_attr(var_light, "hs_color")[0] + 10 }}
+                  {% endif %}
+                - "{{ state_attr(var_light, \"hs_color\")[1] }}"
+              transition: "{{ (var_speed / 1000)|float }}"
+mode: single
