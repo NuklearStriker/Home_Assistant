@@ -28,27 +28,93 @@ blueprint:
       selector:
         entity:
           domain: light
-
-mode: restart
-max_exceeded: silent
-
-variables:
-  var_light: !input target_light
-
+    
+    speed:
+      name: Speed
+      description: The speed in which to update the light when the button is held.
+      selector:
+        number:
+          min: 100
+          max: 1000
+          step: 100
+          unit_of_measurement: milliseconds
+          mode: slider
+      default: 500
+      
 trigger:
   - platform: state
     entity_id: !input 'remote'
     attribute: action
-    
+
 condition: []
-    
+
 action:
   - variables:
       command: " {{ trigger.to_state.attributes.action }} "
+      var_speed: 200
+      var_light: !input target_light
+      
   - choose:
-      # Short-Press on the dim-up button.
-      - conditions: '{{ command == "toggle" }}'
+      - conditions:
+          - condition: template
+            value_template: "{{ command == \"toggle\" }}"
         sequence:
           - service: light.toggle
             target:
               entity_id: !input target_light
+            data: {}
+      - conditions:
+          - condition: template
+            value_template: "{{ command == \"brightness_up_click\" }}"
+        sequence:
+          - service: light.turn_on
+            target:
+              entity_id: !input target_light
+            data:
+              brightness_step_pct: 10
+              transition: "{{ (var_speed / 1000)|float }}"
+      - conditions:
+          - condition: template
+            value_template: "{{ command == \"brightness_down_click\" }}"
+        sequence:
+          - service: light.turn_on
+            target:
+              entity_id: !input target_light
+            data:
+              brightness_step_pct: -10
+              transition: "{{ (var_speed / 1000)|float }}"
+      - conditions:
+          - condition: template
+            value_template: "{{ command == \"arrow_left_click\" }}"
+        sequence:
+          - service: light.turn_on
+            target:
+              entity_id: !input target_light
+            data:
+              hs_color:
+                - "{{ state_attr(var_light, \"hs_color\")[0] }}"
+                - |-
+                  {% if state_attr(var_light, "hs_color")[1] - 5 < 0 %}
+                    {{ state_attr(var_light, "hs_color")[1] - 5 + 100 }}
+                  {% else %}
+                    {{ state_attr(var_light, "hs_color")[1] - 5 }}
+                  {% endif %}
+              transition: "{{ (var_speed / 1000)|float }}"
+      - conditions:
+          - condition: template
+            value_template: "{{ command == \"arrow_right_click\" }}"
+        sequence:
+          - service: light.turn_on
+            target:
+              entity_id: !input target_light
+            data:
+              hs_color:
+                - |-
+                  {% if state_attr(var_light, "hs_color")[0] + 10 > 360 %}
+                    {{ state_attr(var_light, "hs_color")[0] + 10 - 360 }}
+                  {% else %}
+                    {{ state_attr(var_light, "hs_color")[0] + 10 }}
+                  {% endif %}
+                - "{{ state_attr(var_light, \"hs_color\")[1] }}"
+              transition: "{{ (var_speed / 1000)|float }}"
+mode: single
