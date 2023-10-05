@@ -20,8 +20,7 @@ blueprint:
       selector:
         entity:
           filter:
-            - integration: mqtt
-              domain: sensor
+            domain: sensor
 
     target_light:
       name: Light
@@ -48,31 +47,8 @@ action:
       command: " {{ trigger.to_state.attributes.action }} "
   - choose:
       # Short-Press on the dim-up button.
-      - conditions:
-          - '{{ command == "toggle" }}'
+      - conditions: '{{ command == "toggle" }}'
         sequence:
           - service: light.toggle
             target:
               entity_id: !input target_light
-              
-      # Short-Press on the up button.
-      - conditions:
-          - '{{ command == "brightness_up_click" }}'
-        sequence:
-          - service: light.turn_on
-            target:
-              entity_id: !input target_light
-            data:
-              brightness: 120
-              rgb_color: [255, 0, 0]
-
-      # Short-Press on the dim-down button.
-      - conditions:
-          - '{{ command == "brightness_down_click" }}'
-        sequence:
-          - service: light.turn_off
-            target:
-              entity_id: !input target_light
-
-    # Any other event will cancel the repeat loops.
-    default: []
