@@ -16,8 +16,7 @@ blueprint:
   name: Z2M - IKEA TRADFRI - Color Lights
 
   description: >-
-    This automation simulates the use of the IKEA TRADFRI remote control
-    connected through Z2M.
+    This automation simulates the use of the IKEA TRADFRI remote control connected through Z2M.
 
   domain: automation
 
@@ -59,62 +58,90 @@ condition: []
 action:
   - variables:
       command: " {{ trigger.to_state.attributes.action }} "
-      var_speed: !input speed
-      var_light: !input target_light
+      var_speed: 200
+      var_light: !input 'target_light'
       
   - choose:
+      # Simple click on middle button
       - conditions:
           - condition: template
             value_template: "{{ command == \"toggle\" }}"
         sequence:
           - service: light.toggle
             target:
-              entity_id: !input target_light
+              entity_id: !input 'target_light'
             data: {}
+
+      # Simple click on up button
       - conditions:
           - condition: template
             value_template: "{{ command == \"brightness_up_click\" }}"
         sequence:
           - service: light.turn_on
             target:
-              entity_id: !input target_light
+              entity_id: !input 'target_light'
             data:
               brightness_step_pct: 10
               transition: "{{ (var_speed / 1000)|float }}"
+      
+      # Long click on up button
+      - conditions:
+          - condition: template
+            value_template: "{{ command == \"brightness_up_hold\" }}"
+        sequence:
+          - repeat:
+              sequence:
+                - service: light.turn_on
+                  target:
+                    entity_id: !input 'target_light'
+                  data:
+                    brightness_step_pct: 5
+                    transition: "{{ (var_speed / 1000)|float }}"
+              until:
+                - condition: state
+                  entity_id: !input 'remote'
+                  attribute: action
+                  state: brightness_up_release
+
+      # Simple click on down button
       - conditions:
           - condition: template
             value_template: "{{ command == \"brightness_down_click\" }}"
         sequence:
           - service: light.turn_on
             target:
-              entity_id: !input target_light
+              entity_id: !input 'target_light'
             data:
               brightness_step_pct: -10
               transition: "{{ (var_speed / 1000)|float }}"
+
+      # Long click on down button
       - conditions:
           - condition: template
-            value_template: "{{ command == \"arrow_left_click\" }}"
+            value_template: "{{ command == \"brightness_down_hold\" }}"
         sequence:
-          - service: light.turn_on
-            target:
-              entity_id: !input target_light
-            data:
-              hs_color:
-                - "{{ state_attr(var_light, \"hs_color\")[0] }}"
-                - |-
-                  {% if state_attr(var_light, "hs_color")[1] - 5 < 0 %}
-                    {{ state_attr(var_light, "hs_color")[1] - 5 + 100 }}
-                  {% else %}
-                    {{ state_attr(var_light, "hs_color")[1] - 5 }}
-                  {% endif %}
-              transition: "{{ (var_speed / 1000)|float }}"
+          - repeat:
+              sequence:
+                - service: light.turn_on
+                  target:
+                    entity_id: !input 'target_light'
+                  data:
+                    brightness_step_pct: -5
+                    transition: "{{ (var_speed / 1000)|float }}"
+              until:
+                - condition: state
+                  entity_id: !input 'remote'
+                  attribute: action
+                  state: brightness_down_release
+
+      # Simple click on right button
       - conditions:
           - condition: template
             value_template: "{{ command == \"arrow_right_click\" }}"
         sequence:
           - service: light.turn_on
             target:
-              entity_id: !input target_light
+              entity_id: !input 'target_light'
             data:
               hs_color:
                 - |-
@@ -125,4 +152,75 @@ action:
                   {% endif %}
                 - "{{ state_attr(var_light, \"hs_color\")[1] }}"
               transition: "{{ (var_speed / 1000)|float }}"
+              
+      # Long click on right button
+      - conditions:
+          - condition: template
+            value_template: "{{ command == \"arrow_right_hold\" }}"
+        sequence:
+          - repeat:
+              sequence:
+                - service: light.turn_on
+                  target:
+                    entity_id: !input 'target_light'
+                  data:
+                    hs_color:
+                      - |-
+                        {% if state_attr(var_light, "hs_color")[0] + 10 > 360 %}
+                          {{ state_attr(var_light, "hs_color")[0] + 10 - 360 }}
+                        {% else %}
+                          {{ state_attr(var_light, "hs_color")[0] + 10 }}
+                        {% endif %}
+                      - "{{ state_attr(var_light, \"hs_color\")[1] }}"
+              until:
+                - condition: state
+                  entity_id: !input 'remote'
+                  attribute: action
+                  state: arrow_right_release
+
+      # Simple click on left button
+      - conditions:
+          - condition: template
+            value_template: "{{ command == \"arrow_left_click\" }}"
+        sequence:
+          - service: light.turn_on
+            target:
+              entity_id: !input 'target_light'
+            data:
+              hs_color:
+                - "{{ state_attr(var_light, \"hs_color\")[0] }}"
+                - |-
+                  {% if state_attr(var_light, "hs_color")[1] - 5 < 0 %}
+                    {{ state_attr(var_light, "hs_color")[1] - 5 + 100 }}
+                  {% else %}
+                    {{ state_attr(var_light, "hs_color")[1] - 5 }}
+                  {% endif %}
+              transition: "{{ (var_speed / 1000)|float }}"
+                 
+      # Long click on left button
+      - conditions:
+          - condition: template
+            value_template: "{{ command == \"arrow_left_hold\" }}"
+        sequence:
+          - repeat:
+              sequence:
+                - service: light.turn_on
+                  target:
+                    entity_id: !input 'target_light'
+                  data:
+                    hs_color:
+                      - "{{ state_attr(var_light, \"hs_color\")[0] }}"
+                      - |-
+                        {% if state_attr(var_light, "hs_color")[1] - 5 < 0 %}
+                          {{ state_attr(var_light, "hs_color")[1] - 5 + 100 }}
+                        {% else %}
+                          {{ state_attr(var_light, "hs_color")[1] - 5 }}
+                        {% endif %}
+                    transition: "{{ (var_speed / 1000)|float }}"
+              until:
+                - condition: state
+                  entity_id: !input 'remote'
+                  attribute: action
+                  state: arrow_left_release
+
 mode: single
