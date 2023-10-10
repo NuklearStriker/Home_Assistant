@@ -5,7 +5,7 @@
 # | Button   | Action              |
 # | -------- | ------------------- |
 # | Up       | Switch on           |
-# | Down     | Switch off |
+# | Down     | Switch off          |
 # | Right    | Change color        |
 # | Left     | Change saturation   |
 
@@ -37,10 +37,9 @@ blueprint:
           domain: light
 
 trigger:
-  - platform: event
-    event_type: 
-    event_data:
-      device_id: !input remote
+  - platform: state
+    entity_id: !input 'remote'
+    attribute: action
 
 condition: []
 
@@ -58,18 +57,20 @@ action:
           - service: light.turn_on
             target:
               entity_id: !input target_light
-            data: {}
-
+            data: []
+            
       # Long press on UP
-      - condition:
+      - conditions:
           - condition: template
             value_template: "{{ command == \"brightness_move_up\" }}"
         sequence:
           - service: light.turn_on
             target:
               entity_id: !input target_light
-            data: {}
-
+            data: 
+              color_temp: 326
+              brightness_pct: 100
+            
       # Short press on DOWN
       - conditions:
           - condition: template
@@ -78,8 +79,8 @@ action:
           - service: light.turn_off
             target:
               entity_id: !input target_light
-            data: {}
-
+            data: []
+            
       # Short press on LEFT
       - conditions:
           - condition: template
@@ -97,7 +98,7 @@ action:
                   {% else %}
                     {{ state_attr(var_light, "hs_color")[1] - 5 }}
                   {% endif %}
-
+                  
       # Short press on RIGHT
       - conditions:
           - condition: template
