@@ -63,7 +63,7 @@ action:
       # Long press on UP
       - condition:
           - condition: template
-            value_template: "{{ command == \"on\" }}"
+            value_template: "{{ command == \"brightness_move_up\" }}"
         sequence:
           - service: light.turn_on
             target:
