@@ -35,18 +35,6 @@ blueprint:
       selector:
         entity:
           domain: light
-    
-    speed:
-      name: Speed
-      description: The speed in which to update the light when the button is held.
-      selector:
-        number:
-          min: 100
-          max: 1000
-          step: 100
-          unit_of_measurement: milliseconds
-          mode: slider
-      default: 500
       
 trigger:
   - platform: state
@@ -58,7 +46,6 @@ condition: []
 action:
   - variables:
       command: " {{ trigger.to_state.attributes.action }} "
-      var_speed: !input 'speed'
       var_light: !input 'target_light'
       
   - choose:
@@ -79,7 +66,7 @@ action:
         sequence:
           - service: light.turn_on
             target:
-              entity_id: light.lidl_rgb_bulb1
+              entity_id: !input 'target_light'
             data:
               color_temp: 326
               brightness_pct: 100
@@ -94,7 +81,6 @@ action:
               entity_id: !input 'target_light'
             data:
               brightness_step_pct: 10
-              transition: "{{ (var_speed / 1000)|float }}"
 
       # Simple click on down button
       - conditions:
@@ -106,7 +92,6 @@ action:
               entity_id: !input 'target_light'
             data:
               brightness_step_pct: -10
-              transition: "{{ (var_speed / 1000)|float }}"
 
       # Simple click on right button
       - conditions:
@@ -125,7 +110,6 @@ action:
                     {{ state_attr(var_light, "hs_color")[0] + 10 }}
                   {% endif %}
                 - "{{ state_attr(var_light, \"hs_color\")[1] }}"
-              transition: "{{ (var_speed / 1000)|float }}"
 
       # Simple click on left button
       - conditions:
@@ -144,6 +128,5 @@ action:
                   {% else %}
                     {{ state_attr(var_light, "hs_color")[1] - 5 }}
                   {% endif %}
-              transition: "{{ (var_speed / 1000)|float }}"
 
 mode: single
