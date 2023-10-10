@@ -1,6 +1,13 @@
 ---
-# This automation simulates the use of the IKEA TRADFRI Remote control
+# This automation simulates the use of the IKEA STYRBAR Remote control
 # connected through Zigbee2MQTT.
+
+# | Button   | Action              |
+# | -------- | ------------------- |
+# | Up       | Switch on           |
+# | Down     | Switch off |
+# | Right    | Change color        |
+# | Left     | Change saturation   |
 
 blueprint:
   source_url: https://raw.githubusercontent.com/NuklearStriker/Home_Assistant/main/blueprints/automation/Z2M_ikea_styrbar_color.yaml
@@ -29,18 +36,6 @@ blueprint:
         entity:
           domain: light
 
-    speed:
-      name: Speed
-      description: The speed in which to update the light when the button is held.
-      selector:
-        number:
-          min: 100
-          max: 1000
-          step: 100
-          unit_of_measurement: milliseconds
-          mode: slider
-      default: 500
-
 trigger:
   - platform: event
     event_type: 
@@ -52,10 +47,10 @@ condition: []
 action:
   - variables:
       command: " {{ trigger.to_state.attributes.action }} "
-      var_speed: !input speed
       var_light: !input target_light
       
   - choose:
+      # Short press on UP
       - conditions:
           - condition: template
             value_template: "{{ command == \"on\" }}"
@@ -64,6 +59,18 @@ action:
             target:
               entity_id: !input target_light
             data: {}
+
+      # Long press on UP
+      - condition:
+          - condition: template
+            value_template: "{{ command == \"on\" }}"
+        sequence:
+          - service: light.turn_on
+            target:
+              entity_id: !input target_light
+            data: {}
+
+      # Short press on DOWN
       - conditions:
           - condition: template
             value_template: "{{ command == \"off\" }}"
@@ -72,6 +79,8 @@ action:
             target:
               entity_id: !input target_light
             data: {}
+
+      # Short press on LEFT
       - conditions:
           - condition: template
             value_template: "{{ command == \"arrow_left_click\" }}"
@@ -88,7 +97,8 @@ action:
                   {% else %}
                     {{ state_attr(var_light, "hs_color")[1] - 5 }}
                   {% endif %}
-              transition: "{{ (var_speed / 1000)|float }}"
+
+      # Short press on RIGHT
       - conditions:
           - condition: template
             value_template: "{{ command == \"arrow_right_click\" }}"
@@ -105,5 +115,4 @@ action:
                     {{ state_attr(var_light, "hs_color")[0] + 10 }}
                   {% endif %}
                 - "{{ state_attr(var_light, \"hs_color\")[1] }}"
-              transition: "{{ (var_speed / 1000)|float }}"
 mode: single
