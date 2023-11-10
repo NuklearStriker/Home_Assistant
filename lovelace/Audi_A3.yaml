@@ -1,0 +1,124 @@
+type: picture-elements
+elements:
+  - type: state-label
+    entity: sensor.audi_a3_sportback_model
+    style:
+      top: 5%
+      left: 50%
+      font-size: large
+  - type: state-label
+    entity: sensor.audi_a3_sportback_last_update
+    prefix: 'last update : '
+    style:
+      top: 97%
+      left: 50%
+      font-size: small
+  - type: icon
+    entity: binary_sensor.audi_a3_sportback_left_front_door
+    icon: mdi:car-door-lock
+    style:
+      top: 82%
+      left: 40%
+      font-size: small
+    card_mod:
+      style: |
+        :host{
+          color: {% if states('binary_sensor.audi_a3_sportback_left_front_door') == 'off' %} green {% else %} red {% endif %};
+        }
+  - type: icon
+    entity: binary_sensor.audi_a3_sportback_right_front_door
+    icon: mdi:car-door-lock
+    style:
+      top: 16%
+      left: 40%
+      font-size: small
+    card_mod:
+      style: |
+        :host{
+          color: {% if states('binary_sensor.audi_a3_sportback_right_front_door') == 'off' %} green {% else %} red {% endif %};
+        }
+  - type: icon
+    entity: binary_sensor.audi_a3_sportback_left_rear_door
+    icon: mdi:car-door-lock
+    style:
+      top: 82%
+      left: 70%
+      font-size: small
+    card_mod:
+      style: |
+        :host{
+          color: {% if states('binary_sensor.audi_a3_sportback_left_rear_door') == 'off' %} green {% else %} red {% endif %};
+        }
+  - type: icon
+    entity: binary_sensor.audi_a3_sportback_right_rear_door
+    icon: mdi:car-door-lock
+    style:
+      top: 16%
+      left: 70%
+      font-size: small
+    card_mod:
+      style: |
+        :host{
+          color: {% if states('binary_sensor.audi_a3_sportback_right_rear_door') == 'off' %} green {% else %} red {% endif %};
+        }
+  - type: icon
+    entity: binary_sensor.audi_a3_sportback_trunk
+    icon: mdi:lock
+    style:
+      top: 50%
+      left: 98%
+      font-size: small
+    card_mod:
+      style: |
+        :host{
+          color: {% if states('binary_sensor.audi_a3_sportback_trunk') == 'off' %} green {% else %} red {% endif %};
+        }
+  - type: icon
+    entity: binary_sensor.audi_a3_sportback_left_front_window
+    icon: mdi:window-closed
+    style:
+      top: 82%
+      left: 47%
+      font-size: small
+    card_mod:
+      style: |
+        :host{
+          color: {% if states('binary_sensor.audi_a3_sportback_left_front_window') == 'off' %} green {% else %} red {% endif %};
+        }
+  - type: icon
+    entity: binary_sensor.audi_a3_sportback_right_front_window
+    icon: mdi:window-closed
+    style:
+      top: 16%
+      left: 47%
+      font-size: small
+    card_mod:
+      style: |
+        :host{
+          color: {% if states('binary_sensor.audi_a3_sportback_right_front_window') == 'off' %} green {% else %} red {% endif %};
+        }
+  - type: icon
+    entity: binary_sensor.audi_a3_sportback_left_rear_window
+    icon: mdi:window-closed
+    style:
+      top: 82%
+      left: 63%
+      font-size: small
+    card_mod:
+      style: |
+        :host{
+          color: {% if states('binary_sensor.audi_a3_sportback_left_rear_window') == 'off' %} green {% else %} red {% endif %};
+        }
+  - type: icon
+    entity: binary_sensor.audi_a3_sportback_right_rear_window
+    icon: mdi:window-closed
+    style:
+      top: 16%
+      left: 63%
+      font-size: small
+    card_mod:
+      style: |
+        :host{
+          color: {% if states('binary_sensor.audi_a3_sportback_right_rear_window') == 'off' %} green {% else %} red {% endif %};
+        }
+image: /local/Images/fond_audi_A3.png
