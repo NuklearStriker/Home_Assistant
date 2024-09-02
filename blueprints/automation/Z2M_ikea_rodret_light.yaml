@@ -9,13 +9,13 @@
 # | Down     | Switch off          |
 
 blueprint:
-  source_url: https://raw.githubusercontent.com/NuklearStriker/Home_Assistant/main/blueprints/automation/Z2M_ikea_rodret.yaml
+  source_url: https://raw.githubusercontent.com/NuklearStriker/Home_Assistant/main/blueprints/automation/Z2M_ikea_rodret_light.yaml
 
-  name: Z2M - IKEA RODRET
+  name: Z2M - IKEA RODRET - light
 
   description: >-
     This automation simulates the use of the IKEA RODRET remote control
-    connected through Z2M.
+    connected through Z2M to control light.
 
   domain: automation
 
