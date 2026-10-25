@@ -1,0 +1,134 @@
+blueprint:
+  name: Alerte batteries faibles
+  description: >
+    Envoie une notification quand la batterie d'un ou plusieurs appareils passe
+    sous un seuil. Détecte automatiquement tous les capteurs `sensor` dont la
+    classe d'appareil est « batterie » et les capteurs binaires de batterie
+    faible. Un rappel quotidien est envoyé tant que des batteries restent faibles.
+
+
+    Dans l'action de notification, deux variables sont disponibles :
+
+    - `low_battery_text` : liste lisible (une ligne par appareil)
+
+    - `low_battery_count` : nombre d'appareils concernés
+  domain: automation
+  author: Kevin
+  homeassistant:
+    min_version: 2024.10.0
+  input:
+    threshold:
+      name: Seuil de batterie faible
+      description: Une notification est envoyée quand le niveau passe sous cette valeur.
+      default: 20
+      selector:
+        number:
+          min: 5
+          max: 80
+          step: 1
+          unit_of_measurement: "%"
+          mode: slider
+    daily_time:
+      name: Heure du rappel quotidien
+      description: Rappel envoyé chaque jour à cette heure tant qu'une batterie est faible.
+      default: "09:00:00"
+      selector:
+        time: {}
+    exclude:
+      name: Entités à exclure
+      description: Capteurs de batterie à ignorer (batterie de voiture, appareil volontairement débranché...).
+      default: []
+      selector:
+        entity:
+          multiple: true
+          filter:
+            - domain: sensor
+              device_class: battery
+            - domain: binary_sensor
+              device_class: battery
+    notify_action:
+      name: Action de notification
+      description: >
+        Ce qui doit être exécuté pour vous prévenir (notification mobile, Telegram,
+        annonce sur une enceinte...). Utilisez `{{ low_battery_text }}` dans le message.
+      default:
+        - action: persistent_notification.create
+          data:
+            title: "🔋 Batteries faibles"
+            message: "{{ low_battery_text }}"
+      selector:
+        action: {}
+
+mode: single
+
+trigger_variables:
+  threshold: !input threshold
+  exclude: !input exclude
+
+triggers:
+  # Se déclenche dès qu'au moins une batterie passe sous le seuil
+  - trigger: template
+    value_template: >
+      {% set ns = namespace(n=0) %}
+      {% for s in states.sensor
+         if s.attributes.device_class == 'battery'
+         and s.entity_id not in exclude
+         and s.state | is_number
+         and s.state | float < threshold %}
+        {% set ns.n = ns.n + 1 %}
+      {% endfor %}
+      {% for s in states.binary_sensor
+         if s.attributes.device_class == 'battery'
+         and s.entity_id not in exclude
+         and s.state == 'on' %}
+        {% set ns.n = ns.n + 1 %}
+      {% endfor %}
+      {{ ns.n > 0 }}
+  # Rappel quotidien
+  - trigger: time
+    at: !input daily_time
+
+variables:
+  threshold: !input threshold
+  exclude: !input exclude
+  low_battery_text: >
+    {% set ns = namespace(lines=[]) %}
+    {% for s in states.sensor
+       if s.attributes.device_class == 'battery'
+       and s.entity_id not in exclude
+       and s.state | is_number
+       and s.state | float < threshold %}
+      {% set ns.lines = ns.lines + ['- ' ~ s.name ~ ' : ' ~ (s.state | float | round(0) | int) ~ ' %'] %}
+    {% endfor %}
+    {% for s in states.binary_sensor
+       if s.attributes.device_class == 'battery'
+       and s.entity_id not in exclude
+       and s.state == 'on' %}
+      {% set ns.lines = ns.lines + ['- ' ~ s.name ~ ' : batterie faible'] %}
+    {% endfor %}
+    {{ ns.lines | join('\n') }}
+  low_battery_count: >
+    {% set ns = namespace(n=0) %}
+    {% for s in states.sensor
+       if s.attributes.device_class == 'battery'
+       and s.entity_id not in exclude
+       and s.state | is_number
+       and s.state | float < threshold %}
+      {% set ns.n = ns.n + 1 %}
+    {% endfor %}
+    {% for s in states.binary_sensor
+       if s.attributes.device_class == 'battery'
+       and s.entity_id not in exclude
+       and s.state == 'on' %}
+      {% set ns.n = ns.n + 1 %}
+    {% endfor %}
+    {{ ns.n }}
+
+conditions:
+  - condition: template
+    value_template: "{{ low_battery_count | int > 0 }}"
+
+actions:
+  - alias: Envoyer la notification
+    choose: []
+    default: !input notify_action
